@@ -36,8 +36,9 @@ router.get("/", async (req, res) => {
         res.json(grounds);
     } catch (error) {
         console.error("Error fetching grounds:", error); // ✅ Log error for debugging
-        res.status(500).json({ message: "Error retrieving grounds." });
+        res.status(500).json({ message: "An internal server error occurred. Please try again later." }); // ✅ Generic message
     }
 });
+
 
 module.exports = router;
