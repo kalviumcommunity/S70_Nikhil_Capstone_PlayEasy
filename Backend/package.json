@@ -1,0 +1,30 @@
+{
+  "name": "playeasy-capstone",
+  "version": "1.0.0",
+  "description": "An innovative web application for booking cricket grounds and nets with features like dynamic pricing, equipment rentals, and automated weather updates.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalviumcommunity/S70_Nikhil_Capstone_PlayEasy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kalviumcommunity/S70_Nikhil_Capstone_PlayEasy/issues"
+  },
+  "homepage": "https://github.com/kalviumcommunity/S70_Nikhil_Capstone_PlayEasy#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.0"
+  }
+}
