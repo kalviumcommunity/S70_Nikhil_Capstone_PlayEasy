@@ -11,3 +11,4 @@ const GroundSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Ground", GroundSchema);
+
