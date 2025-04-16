@@ -1,5 +1,5 @@
 import React from "react";
-import FilterSidebar from "../components/FilterSidebar";
+import FiltersSidebar from "../components/FiltersSidebar";
 import GroundCard from "../components/GroundCard";
 import BookingDetails from "../components/BookingDetails";
 
@@ -9,7 +9,7 @@ const Booking = () => {
       <div className="max-w-7xl mx-auto px-4 flex gap-6">
         {/* Filters Section */}
         <div className="w-1/4">
-          <FilterSidebar />
+          <FiltersSidebar />
         </div>
 
         {/* Grounds + Booking Details */}

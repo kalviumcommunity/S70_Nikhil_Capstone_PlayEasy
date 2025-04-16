@@ -1,17 +1,24 @@
+// src/components/GroundCard.jsx
 import React from "react";
 
-const GroundCard = ({ name, location, price, rating, image }) => {
+const GroundCard = ({ ground }) => {
+  // Ensure ground.image exists, otherwise use default image
+  const imagePath = ground && ground.image ? `/assets/${ground.image}` : "/assets/ground1.jpeg";
+
   return (
-    <div className="bg-white rounded shadow overflow-hidden w-[300px]">
-      <img src={image} alt={name} className="w-full h-40 object-cover" />
-      <div className="p-3">
-        <h3 className="font-semibold">{name}</h3>
-        <p className="text-sm text-gray-600">{location}</p>
-        <p className="text-sm mt-1">Starting from <strong>{price}</strong></p>
-        <div className="flex items-center justify-between mt-2">
-          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">⭐ {rating}</span>
-          <button className="bg-green-500 text-white px-3 py-1 text-sm rounded hover:bg-green-600">Book Now</button>
-        </div>
+    <div className="border rounded-lg shadow-lg overflow-hidden bg-white">
+      <img
+        src={imagePath} // Dynamically load ground-specific image
+        alt={ground ? ground.name : "Default Ground"}
+        className="w-full h-40 object-cover"
+      />
+      <div className="p-4">
+        <h3 className="text-xl font-semibold">{ground ? ground.name : "Ground Name"}</h3>
+        <p className="text-gray-500">{ground ? ground.location : "Location"}</p>
+        <p className="mt-2 font-medium text-lg">{ground ? `₹${ground.price}` : "₹0"}</p>
+        <p className="mt-2 text-sm text-gray-500">
+          Type: {ground ? ground.type : "N/A"} | Available: {ground ? ground.availability.join(", ") : "N/A"}
+        </p>
       </div>
     </div>
   );
