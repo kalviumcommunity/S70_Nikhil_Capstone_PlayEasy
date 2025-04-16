@@ -1,48 +1,67 @@
 const express = require("express");
-const Ground = require("../models/Ground");
 const router = express.Router();
-const Joi = require("joi");
 
-// Input validation schema
-const groundSchema = Joi.object({
-    name: Joi.string().required(),
-    location: Joi.string().required(),
-    price: Joi.number().min(0).required(),
-    availability: Joi.array().items(Joi.boolean()).required()
-});
+// Import model
+const Ground = require("../models/Ground");
 
-// POST Endpoint
+
+// ✅ POST - Create a new ground
 router.post("/", async (req, res) => {
-    const { error } = groundSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
-
-    try {
-        const { name, location, price, availability } = req.body;
-        const newGround = new Ground({ name, location, price, availability });
-        await newGround.save();
-        res.status(201).json({ message: "Ground added successfully", newGround });
-    } catch (error) {
-        console.error("Error saving ground:", error); // ✅ Log error for debugging
-        res.status(500).json({ message: "An internal server error occurred. Please try again later." });
-    }
+  try {
+    const newGround = new Ground(req.body);
+    await newGround.save();
+    res.status(201).json(newGround);
+  } catch (error) {
+    res.status(400).json({ message: "Error creating ground", error });
+  }
 });
 
-// ✅ Re-add the GET endpoint if missing
+
+// ✅ GET endpoint with filters
 router.get("/", async (req, res) => {
-    try {
-        const grounds = await Ground.find();
-        res.json(grounds);
-    } catch (error) {
-        console.error("Error fetching grounds:", error); // ✅ Log error for debugging
-        res.status(500).json({ message: "An internal server error occurred. Please try again later." }); // ✅ Generic message
-    }
+  const { location, minPrice, maxPrice, type } = req.query;
+
+  const query = {};
+  if (location) query.location = location;
+  if (type) query.type = type;
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = parseInt(minPrice);
+    if (maxPrice) query.price.$lte = parseInt(maxPrice);
+  }
+
+  try {
+    const filteredGrounds = await Ground.find(query);
+    res.json(filteredGrounds);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 
 
+// ✅ PUT endpoint to update ground details
+router.put("/:id", async (req, res) => {
+  try {
+    const groundId = req.params.id;
+    const updatedData = req.body;
+
+    const updatedGround = await Ground.findByIdAndUpdate(
+      groundId,
+      updatedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedGround) {
+      return res.status(404).json({ message: "Ground not found" });
+    }
+
+    res.status(200).json(updatedGround);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating ground", error });
+  }
+});
 
 module.exports = router;
-
-
-
