@@ -15,6 +15,9 @@ import Signup from "./pages/Signup";
 import Auth from "./pages/Auth";
 import PaymentPage from "./pages/PaymentPage";
 
+// ✅ Import ManageGrounds component
+import ManageGrounds from "./components/ManageGrounds";
+
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -38,6 +41,9 @@ const App = () => {
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/payment" element={<PaymentPage />} />
+          
+          {/* ✅ Add Manage Grounds route */}
+          <Route path="/manage-grounds" element={<ManageGrounds />} />
         </Routes>
       </main>
 
