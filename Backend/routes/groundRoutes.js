@@ -64,4 +64,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+// ✅ DELETE endpoint to remove a ground
+router.delete("/:id", async (req, res) => {
+  try {
+    const groundId = req.params.id;
+    const deletedGround = await Ground.findByIdAndDelete(groundId);
+
+    if (!deletedGround) {
+      return res.status(404).json({ message: "Ground not found" });
+    }
+
+    res.status(200).json({ message: "Ground deleted successfully", deletedGround });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting ground", error });
+  }
+});
+
 module.exports = router;
