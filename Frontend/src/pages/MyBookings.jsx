@@ -30,11 +30,11 @@ const MyBookings = () => {
       navigate("/auth");
       return;
     }
-    fetchBookings(user.email)
+    fetchBookings()
       .then((res) => setBookings(res.data))
       .catch(() => toast.error("Failed to load bookings."))
       .finally(() => setLoading(false));
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleCancel = async (bookingId) => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;

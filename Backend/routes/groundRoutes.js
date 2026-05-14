@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
+const { protect } = require("../middleware/authMiddleware");
 
 // Import model
 const Ground = require("../models/Ground");
 
 
 // ✅ POST - Create a new ground
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   try {
     const newGround = new Ground(req.body);
-    await newGround.save();
-    res.status(201).json(newGround);
+    const savedGround = await newGround.save();
+    res.status(201).json({ message: "Ground added successfully!", data: savedGround });
   } catch (error) {
-    res.status(400).json({ message: "Error creating ground", error });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -41,43 +42,35 @@ router.get("/", async (req, res) => {
 
 
 // ✅ PUT endpoint to update ground details
-router.put("/:id", async (req, res) => {
+router.put("/:id", protect, async (req, res) => {
   try {
-    const groundId = req.params.id;
-    const updatedData = req.body;
-
-    const updatedGround = await Ground.findByIdAndUpdate(
-      groundId,
-      updatedData,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const updatedGround = await Ground.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedGround) {
       return res.status(404).json({ message: "Ground not found" });
     }
 
-    res.status(200).json(updatedGround);
+    res.status(200).json({ message: "Ground updated successfully!", data: updatedGround });
   } catch (error) {
-    res.status(500).json({ message: "Error updating ground", error });
+    res.status(400).json({ error: error.message });
   }
 });
 
 // ✅ DELETE endpoint to remove a ground
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", protect, async (req, res) => {
   try {
-    const groundId = req.params.id;
-    const deletedGround = await Ground.findByIdAndDelete(groundId);
+    const deletedGround = await Ground.findByIdAndDelete(req.params.id);
 
     if (!deletedGround) {
       return res.status(404).json({ message: "Ground not found" });
     }
 
-    res.status(200).json({ message: "Ground deleted successfully", deletedGround });
+    res.status(200).json({ message: "Ground deleted successfully!" });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting ground", error });
+    res.status(500).json({ error: error.message });
   }
 });
 
