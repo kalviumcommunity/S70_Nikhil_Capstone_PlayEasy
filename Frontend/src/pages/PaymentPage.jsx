@@ -108,11 +108,11 @@ const PaymentPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-white gap-6">
-        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+        <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center border-4 border-green-100 border-t-green-500 animate-[spin_3s_linear_infinite]">
           {processingStep < 4 ? (
-            <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
+            <div className="text-4xl animate-bounce -rotate-45">🏏</div>
           ) : (
-            <CheckCircle className="w-10 h-10 text-green-600" />
+            <CheckCircle className="w-10 h-10 text-green-600 animate-none" />
           )}
         </div>
         <div className="text-center">

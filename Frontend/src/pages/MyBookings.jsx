@@ -88,15 +88,19 @@ const MyBookings = () => {
         </div>
 
         {bookings.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-            <p className="text-5xl mb-4">🏏</p>
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">No bookings yet</h3>
-            <p className="text-gray-400 text-sm mb-6">Start by booking your first cricket ground!</p>
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-16 text-center max-w-2xl mx-auto mt-10">
+            <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <span className="text-5xl">🏏</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No bookings yet</h3>
+            <p className="text-gray-500 text-base mb-8 max-w-md mx-auto leading-relaxed">
+              You haven't booked any grounds yet. Get your gear ready and find the perfect pitch for your next match!
+            </p>
             <button
               onClick={() => navigate("/booking")}
-              className="bg-green-600 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 transition"
+              className="bg-green-600 text-white px-8 py-3.5 rounded-full font-bold hover:bg-green-700 transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95"
             >
-              Browse Grounds
+              Browse Grounds & Book
             </button>
           </div>
         ) : (

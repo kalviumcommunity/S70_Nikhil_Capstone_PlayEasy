@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import heroImage from "../assets/ground-hero.png.png";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [city, setCity] = useState("");
   const [date, setDate] = useState("");
   const [budget, setBudget] = useState("");

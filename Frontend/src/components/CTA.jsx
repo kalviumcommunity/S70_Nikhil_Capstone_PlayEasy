@@ -1,8 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const CTA = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
   return (
     <section className="py-16 bg-gray-50" id="contact">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,12 +23,14 @@ const CTA = () => {
             >
               Book a Ground
             </button>
-            <button
-              onClick={() => navigate("/auth")}
-              className="border-2 border-white text-white font-bold px-8 py-3 rounded-full hover:bg-white/10 transition"
-            >
-              Create Free Account
-            </button>
+            {!isAuthenticated && (
+              <button
+                onClick={() => navigate("/auth")}
+                className="border-2 border-white text-white font-bold px-8 py-3 rounded-full hover:bg-white/10 transition"
+              >
+                Create Free Account
+              </button>
+            )}
           </div>
         </div>
       </div>

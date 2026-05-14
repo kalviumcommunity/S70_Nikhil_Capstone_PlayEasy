@@ -57,19 +57,25 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
-              <>
-                <span className="text-sm font-medium text-gray-700">
-                  👋 Hi, <span className="text-green-600">{user.name.split(" ")[0]}</span>
-                </span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                  <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user.name.split(" ")[0]}
+                  </span>
+                </div>
                 <button
                   onClick={handleLogout}
-                  className="text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full hover:border-red-400 hover:text-red-500 transition"
+                  className="text-sm font-medium text-red-500 hover:text-red-600 transition flex items-center gap-1.5"
                 >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                   Logout
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 <button
@@ -80,7 +86,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => navigate("/auth")}
-                  className="text-sm bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-sm"
+                  className="text-sm bg-green-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-green-700 hover:shadow-md transition active:scale-95"
                 >
                   Sign Up Free
                 </button>

@@ -87,18 +87,20 @@ const FiltersSidebar = ({ filters, onChange, onApply }) => {
         </select>
       </div>
 
-      <button
-        onClick={onApply}
-        className="w-full bg-green-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-green-700 active:scale-95 transition shadow-sm"
-      >
-        Apply Filters
-      </button>
-      <button
-        onClick={() => onChange({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" })}
-        className="w-full mt-2 text-gray-500 py-2 rounded-xl text-sm hover:text-gray-700 transition"
-      >
-        Clear All
-      </button>
+      <div className="flex flex-col gap-2 mt-2">
+        <button
+          onClick={onApply}
+          className="w-full bg-green-600 text-white py-3 rounded-xl text-sm font-semibold hover:bg-green-700 active:scale-95 transition shadow-sm"
+        >
+          Apply Filters
+        </button>
+        <button
+          onClick={() => onChange({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" })}
+          className="w-full text-gray-500 py-2.5 rounded-xl text-sm font-medium hover:text-gray-900 hover:bg-gray-50 transition border border-transparent hover:border-gray-200"
+        >
+          Clear All
+        </button>
+      </div>
     </div>
   );
 };
