@@ -1,9 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/ground-hero.png.png";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const [city, setCity] = useState("");
+  const [date, setDate] = useState("");
+  const [budget, setBudget] = useState("");
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (city) params.set("city", city);
+    if (date) params.set("date", date);
+    if (budget) params.set("maxPrice", budget);
+    navigate(`/booking?${params.toString()}`);
+  };
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div
@@ -11,7 +24,7 @@ const Hero = () => {
       style={{ backgroundImage: `url(${heroImage})` }}
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/65" />
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
@@ -30,28 +43,35 @@ const Hero = () => {
         <div className="bg-white/95 backdrop-blur rounded-2xl p-3 flex flex-col sm:flex-row gap-2 shadow-2xl max-w-2xl mx-auto">
           <input
             type="text"
-            placeholder="📍 City or Area"
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 focus:outline-none bg-gray-50 border border-gray-200"
+            placeholder="📍 City or Area (e.g. Hyderabad)"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50 border border-gray-200"
           />
           <input
             type="date"
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-500 focus:outline-none bg-gray-50 border border-gray-200"
+            min={today}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50 border border-gray-200"
           />
           <input
             type="number"
             placeholder="₹ Max Budget"
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 focus:outline-none bg-gray-50 border border-gray-200"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="flex-1 px-4 py-2.5 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50 border border-gray-200"
           />
           <button
-            onClick={() => navigate("/booking")}
-            className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-green-700 transition text-sm shadow"
+            onClick={handleSearch}
+            className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-green-700 active:scale-95 transition text-sm shadow"
           >
             Search
           </button>
         </div>
 
         {/* Stats */}
-        <div className="flex justify-center gap-8 mt-10">
+        <div className="flex justify-center gap-10 mt-10">
           {[
             { value: "500+", label: "Grounds" },
             { value: "50k+", label: "Players" },

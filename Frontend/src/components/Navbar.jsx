@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -15,15 +16,17 @@ const Navbar = () => {
 
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/booking", label: "Book" },
-    { to: "#nets", label: "Nets" },
-    { to: "#pricing", label: "Pricing" },
-    { to: "#contact", label: "Contact" },
+    { to: "/booking", label: "Browse Grounds" },
   ];
 
   if (isAuthenticated) {
     navLinks.push({ to: "/my-bookings", label: "My Bookings" });
   }
+
+  const isActive = (path) =>
+    path === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(path);
 
   return (
     <nav className="bg-white shadow-md fixed top-0 w-full z-50">
@@ -31,17 +34,22 @@ const Navbar = () => {
         <div className="flex justify-between h-16 items-center">
 
           {/* Logo */}
-          <Link to="/" className="text-green-600 text-2xl font-bold tracking-tight">
+          <Link to="/" className="text-green-600 text-2xl font-bold tracking-tight flex items-center gap-1.5">
+            <span className="text-xl">🏏</span>
             Play<span className="text-gray-900">Easy</span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex space-x-6 text-gray-700 font-medium">
+          <div className="hidden md:flex space-x-1 text-gray-700 font-medium">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 to={link.to}
-                className="hover:text-green-600 transition duration-200 text-sm"
+                className={`px-4 py-2 rounded-lg text-sm transition duration-200 ${
+                  isActive(link.to)
+                    ? "bg-green-50 text-green-700 font-semibold"
+                    : "hover:text-green-600 hover:bg-gray-50"
+                }`}
               >
                 {link.label}
               </Link>
@@ -66,7 +74,7 @@ const Navbar = () => {
               <>
                 <button
                   onClick={() => navigate("/auth")}
-                  className="text-sm text-gray-700 hover:text-green-600 font-medium transition"
+                  className="text-sm text-gray-700 hover:text-green-600 font-medium transition px-3 py-1.5"
                 >
                   Login
                 </button>
@@ -74,7 +82,7 @@ const Navbar = () => {
                   onClick={() => navigate("/auth")}
                   className="text-sm bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-sm"
                 >
-                  Sign Up
+                  Sign Up Free
                 </button>
               </>
             )}
@@ -96,24 +104,28 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 shadow-lg">
-          <div className="flex flex-col space-y-3">
+          <div className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 to={link.to}
                 onClick={() => setMenuOpen(false)}
-                className="text-gray-700 font-medium hover:text-green-600 py-1 transition"
+                className={`px-4 py-2.5 rounded-lg font-medium transition ${
+                  isActive(link.to)
+                    ? "bg-green-50 text-green-700 font-semibold"
+                    : "text-gray-700 hover:text-green-600 hover:bg-gray-50"
+                }`}
               >
                 {link.label}
               </Link>
             ))}
-            <hr className="border-gray-100" />
+            <hr className="border-gray-100 my-1" />
             {isAuthenticated ? (
               <>
-                <p className="text-sm text-gray-500">Signed in as <strong>{user.name}</strong></p>
+                <p className="text-sm text-gray-500 px-4">Signed in as <strong>{user.name}</strong></p>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-sm border border-red-300 text-red-500 py-2 rounded-full hover:bg-red-50 transition"
+                  className="w-full text-sm border border-red-300 text-red-500 py-2 rounded-full hover:bg-red-50 transition mt-1"
                 >
                   Logout
                 </button>
@@ -130,7 +142,7 @@ const Navbar = () => {
                   onClick={() => { navigate("/auth"); setMenuOpen(false); }}
                   className="w-full text-sm bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition"
                 >
-                  Sign Up
+                  Sign Up Free
                 </button>
               </>
             )}

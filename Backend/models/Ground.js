@@ -16,17 +16,22 @@ const GroundSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
+    type: {
+        type: String,
+        enum: ["Outdoor", "Indoor", "Net"],
+        default: "Outdoor"
+    },
     availability: {
-        type: [String], // e.g. ["Monday 9-10", "Tuesday 10-11"]
+        type: [String],
         default: []
     },
     amenities: {
-        type: [String], // e.g. ["Floodlights", "Parking"]
+        type: [String],
         default: []
     },
     ratings: {
         type: Number,
-        default: 0,
+        default: 4.5,
         min: 0,
         max: 5
     },

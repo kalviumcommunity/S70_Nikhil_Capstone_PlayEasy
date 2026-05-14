@@ -13,6 +13,7 @@ import Auth from "./pages/Auth";
 import PaymentPage from "./pages/PaymentPage";
 import ManageGrounds from "./components/ManageGrounds";
 import MyBookings from "./pages/MyBookings";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/manage-grounds" element={<ManageGrounds />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />

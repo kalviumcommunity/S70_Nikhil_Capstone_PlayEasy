@@ -24,5 +24,6 @@ export const deleteGround = (id) => API.delete(`/grounds/${id}`);
 // Bookings
 export const createBooking = (data) => API.post("/bookings", data);
 export const fetchBookings = (email) => API.get("/bookings", { params: { email } });
+export const cancelBooking = (id) => API.patch(`/bookings/${id}/cancel`);
 
 export default API;

@@ -22,21 +22,22 @@ router.get("/", async (req, res) => {
   const { location, minPrice, maxPrice, type } = req.query;
 
   const query = {};
-  if (location) query.location = location;
+  if (location) query.location = { $regex: location, $options: "i" }; // case-insensitive partial match
   if (type) query.type = type;
   if (minPrice || maxPrice) {
-    query.price = {};
-    if (minPrice) query.price.$gte = parseInt(minPrice);
-    if (maxPrice) query.price.$lte = parseInt(maxPrice);
+    query.pricePerHour = {};
+    if (minPrice) query.pricePerHour.$gte = parseInt(minPrice);
+    if (maxPrice) query.pricePerHour.$lte = parseInt(maxPrice);
   }
 
   try {
-    const filteredGrounds = await Ground.find(query);
+    const filteredGrounds = await Ground.find(query).sort({ ratings: -1 });
     res.json(filteredGrounds);
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
   }
 });
+
 
 
 // ✅ PUT endpoint to update ground details

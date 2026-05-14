@@ -1,11 +1,12 @@
-// src/components/BookingDetails.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "./Toast";
 
 const BookingDetails = ({ ground }) => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
   const timeSlots = [
     "06:00 AM - 08:00 AM",
@@ -16,12 +17,20 @@ const BookingDetails = ({ ground }) => {
     "06:00 PM - 08:00 PM",
   ];
 
+  const today = new Date().toISOString().split("T")[0];
   const isReadyToBook = selectedDate && selectedTimeSlot;
-  const discountedPrice = ground?.price ? ground.price - 1000 : 0;
+
+  const basePrice = ground?.price || ground?.pricePerHour || 0;
+  const discount = Math.round(basePrice * 0.1); // 10% off
+  const total = basePrice - discount;
 
   const handleProceed = () => {
-    if (!isReadyToBook) {
-      alert("Please select a date and time slot.");
+    if (!selectedDate) {
+      toast.error("Please select a date.");
+      return;
+    }
+    if (!selectedTimeSlot) {
+      toast.error("Please select a time slot.");
       return;
     }
 
@@ -30,9 +39,9 @@ const BookingDetails = ({ ground }) => {
       location: ground?.location || "N/A",
       date: selectedDate,
       timeSlot: selectedTimeSlot,
-      basePrice: ground?.price || 0,
-      discount: 1000,
-      total: discountedPrice,
+      basePrice,
+      discount,
+      total,
     };
 
     localStorage.setItem("bookingInfo", JSON.stringify(bookingData));
@@ -40,53 +49,76 @@ const BookingDetails = ({ ground }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-md p-4 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Booking Details</h2>
+    <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 sticky top-24">
+      <h2 className="text-lg font-bold text-gray-900 mb-4">📋 Booking Details</h2>
 
-      <div className="mb-3">
-        <label className="block text-gray-700 font-medium mb-1">Select Date:</label>
+      {/* Ground Summary */}
+      {ground && (
+        <div className="bg-green-50 rounded-xl p-3 mb-4 border border-green-100">
+          <p className="font-semibold text-gray-900 text-sm">{ground.name}</p>
+          <p className="text-gray-500 text-xs mt-0.5 flex items-center gap-1">
+            <span>📍</span> {ground.location}
+          </p>
+        </div>
+      )}
+
+      {/* Date Picker */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Date</label>
         <input
           type="date"
-          className="w-full border rounded-md p-2"
+          min={today}
+          className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
         />
       </div>
 
+      {/* Time Slot */}
       <div className="mb-4">
-        <label className="block text-gray-700 font-medium mb-1">Select Time Slot:</label>
-        <select
-          className="w-full border rounded-md p-2"
-          value={selectedTimeSlot}
-          onChange={(e) => setSelectedTimeSlot(e.target.value)}
-        >
-          <option value="">-- Select a Slot --</option>
-          {timeSlots.map((slot, idx) => (
-            <option key={idx} value={slot}>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Time Slot</label>
+        <div className="grid grid-cols-2 gap-2">
+          {timeSlots.map((slot) => (
+            <button
+              key={slot}
+              onClick={() => setSelectedTimeSlot(slot)}
+              className={`text-xs py-2 px-2 rounded-xl border font-medium transition ${
+                selectedTimeSlot === slot
+                  ? "bg-green-600 text-white border-green-600 shadow-sm"
+                  : "bg-gray-50 text-gray-700 border-gray-200 hover:border-green-400 hover:text-green-600"
+              }`}
+            >
               {slot}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
+      {/* Price Summary */}
       {isReadyToBook && (
-        <div className="space-y-2 border-t pt-4">
-          <p><strong>Ground:</strong> {ground?.name}</p>
-          <p><strong>Location:</strong> {ground?.location}</p>
-          <p><strong>Date:</strong> {selectedDate}</p>
-          <p><strong>Time Slot:</strong> {selectedTimeSlot}</p>
-          <p><strong>Base Price (2 hrs):</strong> ₹{ground?.price}</p>
-          <p><strong>Discount:</strong> -₹1000</p>
-          <p className="font-bold text-lg">Total: ₹{discountedPrice}</p>
-
-          <button
-            onClick={handleProceed}
-            className="mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
-          >
-            Proceed to Payment
-          </button>
+        <div className="space-y-2 border-t border-gray-100 pt-4 mb-4 text-sm">
+          <div className="flex justify-between text-gray-600">
+            <span>Base Price (2 hrs)</span>
+            <span>₹{basePrice.toLocaleString("en-IN")}</span>
+          </div>
+          <div className="flex justify-between text-green-600">
+            <span>10% Discount 🎉</span>
+            <span>-₹{discount.toLocaleString("en-IN")}</span>
+          </div>
+          <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-100">
+            <span>Total Payable</span>
+            <span className="text-green-600">₹{total.toLocaleString("en-IN")}</span>
+          </div>
         </div>
       )}
+
+      <button
+        onClick={handleProceed}
+        disabled={!isReadyToBook}
+        className="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed text-sm active:scale-95"
+      >
+        {isReadyToBook ? `Proceed to Payment →` : "Select Date & Time"}
+      </button>
     </div>
   );
 };
