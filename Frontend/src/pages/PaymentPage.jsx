@@ -14,6 +14,7 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(false);
   const [processingStep, setProcessingStep] = useState(0);
   const [paid, setPaid] = useState(false);
+  const [countdown, setCountdown] = useState(4);
   const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -94,9 +95,20 @@ const PaymentPage = () => {
         paymentMethod,
       });
       localStorage.removeItem("bookingInfo");
+      // Show success screen — must set loading false first so paid screen renders
+      setLoading(false);
       setPaid(true);
       toast.success("Booking confirmed! See you on the pitch 🏏");
-      setTimeout(() => navigate("/my-bookings"), 3500);
+      // Countdown then redirect
+      let secs = 4;
+      const timer = setInterval(() => {
+        secs -= 1;
+        setCountdown(secs);
+        if (secs <= 0) {
+          clearInterval(timer);
+          navigate("/my-bookings");
+        }
+      }, 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Booking save failed. Please try again.");
       setLoading(false);
@@ -135,33 +147,46 @@ const PaymentPage = () => {
     );
   }
 
-  // Success screen
-  if (paid) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center gap-5 bg-gradient-to-br from-green-50 to-white">
-        <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center animate-bounce">
+  // Success overlay — renders on top of the page, not replacing it
+  const SuccessOverlay = paid ? (
+    <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-[fadeIn_0.3s_ease-out]">
+        {/* Animated checkmark */}
+        <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5 shadow-inner">
           <CheckCircle className="text-green-500 w-14 h-14" />
         </div>
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Booking Confirmed! 🏏</h2>
-          <p className="text-gray-500 text-base">Your ground is booked. See you on the pitch!</p>
-          <p className="text-gray-400 text-sm mt-2">Redirecting to My Bookings...</p>
-        </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 max-w-sm w-full mx-4 text-sm">
-          <p className="font-bold text-gray-900">{name}</p>
-          <p className="text-gray-500 text-xs mb-3">{location}</p>
-          <div className="flex gap-4 text-gray-500">
-            <span className="flex items-center gap-1"><Calendar className="w-4 h-4 text-green-500" />{date}</span>
-            <span className="flex items-center gap-1"><Clock className="w-4 h-4 text-green-500" />{timeSlot}</span>
+        <h2 className="text-2xl font-extrabold text-gray-900 mb-1">Payment Successful! 🎉</h2>
+        <p className="text-green-600 font-semibold mb-1">Booking Confirmed</p>
+        <p className="text-gray-500 text-sm mb-5">Your ground is booked. See you on the pitch!</p>
+
+        {/* Booking receipt */}
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4 text-left text-sm mb-5">
+          <p className="font-bold text-gray-900 mb-0.5">{name}</p>
+          <p className="text-gray-400 text-xs mb-3 flex items-center gap-1">📍 {location}</p>
+          <div className="flex gap-4 text-gray-500 text-xs mb-3">
+            <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-green-500" />{date}</span>
+            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-green-500" />{timeSlot}</span>
           </div>
-          <div className="flex justify-between mt-3 pt-3 border-t">
+          <div className="flex justify-between pt-3 border-t border-gray-200">
             <span className="text-gray-500">Total Paid</span>
-            <span className="font-bold text-green-600">₹{total?.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-green-600 text-base">₹{total?.toLocaleString("en-IN")}</span>
           </div>
         </div>
+
+        {/* Countdown */}
+        <p className="text-gray-400 text-sm">
+          Redirecting to My Bookings in{" "}
+          <span className="font-bold text-green-600">{countdown}s</span>...
+        </p>
+        <button
+          onClick={() => navigate("/my-bookings")}
+          className="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition text-sm"
+        >
+          View My Bookings →
+        </button>
       </div>
-    );
-  }
+    </div>
+  ) : null;
 
   const paymentMethods = [
     { id: "upi", label: "UPI", icon: "💳" },
@@ -171,6 +196,7 @@ const PaymentPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 md:px-8">
+      {SuccessOverlay}
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-7">Complete Your Booking</h1>
 
