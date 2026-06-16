@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import FiltersSidebar from "../components/FiltersSidebar";
 import GroundCard from "../components/GroundCard";
-import BookingDetails from "../components/BookingDetails";
 import { fetchGrounds } from "../api";
 
 // Fallback static grounds if API has no data yet
@@ -60,7 +59,7 @@ const STATIC_GROUNDS = [
 
 const Booking = () => {
   const [searchParams] = useSearchParams();
-  const [selectedGround, setSelectedGround] = useState(null);
+  const navigate = useNavigate();
   const [grounds, setGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -119,15 +118,12 @@ const Booking = () => {
 
   const handleApplyFilters = () => {
     setAppliedFilters({ ...filters });
-    setSelectedGround(null);
   };
 
   // Called by FiltersSidebar's "Clear All" with the cleared state directly
-  // This avoids the async setState timing issue
   const handleClearFilters = (cleared) => {
     setFilters(cleared);
     setAppliedFilters(cleared);
-    setSelectedGround(null);
   };
 
   return (
@@ -152,76 +148,48 @@ const Booking = () => {
           />
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1">
-          <div className="flex flex-col xl:flex-row gap-6">
-            {/* Ground Cards */}
-            <div className="flex-1">
-              {loading ? (
-                <div className="grid sm:grid-cols-2 gap-5">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="bg-white rounded-2xl h-64 animate-pulse border border-gray-100">
-                      <div className="h-44 bg-gray-200 rounded-t-2xl" />
-                      <div className="p-4 space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-2/3" />
-                        <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      </div>
-                    </div>
-                  ))}
+        {/* Main Content — Grid with 3 columns for card expansion */}
+        <div className="flex-grow">
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-white rounded-2xl h-64 animate-pulse border border-gray-100">
+                  <div className="h-44 bg-gray-200 rounded-t-2xl" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-2/3" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
                 </div>
-              ) : grounds.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
-                  <p className="text-5xl mb-4">🏟️</p>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">No grounds found</h3>
-                  <p className="text-gray-400 text-sm mb-5">
-                    Try adjusting your filters or search a different city.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setFilters({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" });
-                      setAppliedFilters({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" });
-                    }}
-                    className="bg-green-600 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 transition"
-                  >
-                    Clear Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid sm:grid-cols-2 gap-5">
-                  {grounds.map((ground) => (
-                    <GroundCard
-                      key={ground._id || ground.name}
-                      ground={ground}
-                      onBook={() => {
-                        setSelectedGround(ground);
-                        // Scroll to booking details on mobile
-                        if (window.innerWidth < 1280) {
-                          setTimeout(() => {
-                            document.getElementById("booking-details-panel")?.scrollIntoView({ behavior: "smooth" });
-                          }, 100);
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
+              ))}
             </div>
-
-            {/* Booking Details Panel */}
-            <div className="w-full xl:w-[300px] flex-shrink-0" id="booking-details-panel">
-              {selectedGround ? (
-                <BookingDetails ground={selectedGround} />
-              ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
-                  <p className="text-4xl mb-3">👈</p>
-                  <h3 className="font-semibold text-gray-700 mb-1 text-sm">Select a Ground</h3>
-                  <p className="text-gray-400 text-xs">
-                    Click "Book Now" on any ground to see available dates and time slots.
-                  </p>
-                </div>
-              )}
+          ) : grounds.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+              <p className="text-5xl mb-4">🏟️</p>
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No grounds found</h3>
+              <p className="text-gray-400 text-sm mb-5">
+                Try adjusting your filters or search a different city.
+              </p>
+              <button
+                onClick={() => {
+                  setFilters({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" });
+                  setAppliedFilters({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" });
+                }}
+                className="bg-green-600 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 transition"
+              >
+                Clear Filters
+              </button>
             </div>
-          </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {grounds.map((ground) => (
+                <GroundCard
+                  key={ground._id || ground.name}
+                  ground={ground}
+                  onBook={() => navigate(`/grounds/${ground._id}`)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

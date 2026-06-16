@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const TYPE_COLORS = {
   Outdoor: "bg-sky-100 text-sky-700",
@@ -10,10 +11,11 @@ const GroundCard = ({ ground, onBook, onEdit, onDelete, showActions = false }) =
   const rating = ground.rating || ground.ratings || 4.5;
   const price = ground.price || ground.pricePerHour || 0;
   const type = ground.type || "Outdoor";
+  const detailUrl = `/grounds/${ground._id}`;
 
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-      <div className="relative overflow-hidden h-44">
+      <Link to={detailUrl} className="block relative overflow-hidden h-44">
         <img
           src={ground.image || (ground.images && ground.images[0]) || "https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400&q=80"}
           alt={ground.name}
@@ -27,10 +29,12 @@ const GroundCard = ({ ground, onBook, onEdit, onDelete, showActions = false }) =
         <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-yellow-600 text-xs font-bold px-2 py-1 rounded-full shadow">
           ⭐ {Number(rating).toFixed(1)}
         </div>
-      </div>
+      </Link>
 
       <div className="p-4">
-        <h3 className="text-base font-bold text-gray-900 mb-0.5 truncate">{ground.name}</h3>
+        <Link to={detailUrl} className="block hover:text-green-600 transition-colors">
+          <h3 className="text-base font-bold text-gray-900 mb-0.5 truncate">{ground.name}</h3>
+        </Link>
         <p className="text-gray-500 text-sm flex items-center gap-1 mb-3">
           <span>📍</span> {ground.location}
         </p>

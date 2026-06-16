@@ -34,6 +34,7 @@ export const loginUser = (data) => API.post("/auth/login", data);
 
 // Grounds
 export const fetchGrounds = (params) => API.get("/grounds", { params });
+export const fetchGroundById = (id) => API.get(`/grounds/${id}`);
 export const createGround = (data) => API.post("/grounds", data);
 export const updateGround = (id, data) => API.put(`/grounds/${id}`, data);
 export const deleteGround = (id) => API.delete(`/grounds/${id}`);

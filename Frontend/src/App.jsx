@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Booking from "./pages/Booking";
+import GroundDetailPage from "./pages/GroundDetailPage";
 import Auth from "./pages/Auth";
 import PaymentPage from "./pages/PaymentPage";
 import ManageGrounds from "./components/ManageGrounds";
@@ -26,6 +27,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/booking" element={<Booking />} />
+              <Route path="/grounds/:id" element={<GroundDetailPage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/login" element={<Auth />} />
               <Route path="/signup" element={<Auth />} />

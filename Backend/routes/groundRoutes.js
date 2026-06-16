@@ -39,7 +39,18 @@ router.get("/", async (req, res) => {
   }
 });
 
-
+// ✅ GET - Get a single ground by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const ground = await Ground.findById(req.params.id);
+    if (!ground) {
+      return res.status(404).json({ message: "Ground not found" });
+    }
+    res.json(ground);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error", details: error.message });
+  }
+});
 
 // ✅ PUT endpoint to update ground details
 router.put("/:id", protect, async (req, res) => {
