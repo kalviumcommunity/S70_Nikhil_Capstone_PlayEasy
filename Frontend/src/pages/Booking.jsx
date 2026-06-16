@@ -92,12 +92,8 @@ const Booking = () => {
           type: appliedFilters.type,
         });
         const apiGrounds = res.data || [];
-        // Use API data if available, then apply client-side minRating filter
-        if (apiGrounds.length > 0) {
-          setGrounds(applyClientFilters(apiGrounds, appliedFilters));
-        } else {
-          setGrounds(applyClientFilters(STATIC_GROUNDS, appliedFilters));
-        }
+        // Use API data and apply client-side minRating filter
+        setGrounds(applyClientFilters(apiGrounds, appliedFilters));
       } catch {
         // API unavailable — use static data with client-side filtering
         setGrounds(applyClientFilters(STATIC_GROUNDS, appliedFilters));

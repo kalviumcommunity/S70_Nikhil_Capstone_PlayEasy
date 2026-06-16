@@ -1,4 +1,5 @@
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 const mongoose = require("mongoose");
 const Ground = require("./models/Ground");
 
@@ -51,6 +52,46 @@ const seedGrounds = [
     ratings: 4.5,
     description: "Premium practice nets in Chennai with both cement and turf pitches. Ideal for intense batting and bowling drills.",
     amenities: ["Turf & Cement Pitches", "Net Bowlers", "Coaching Staff"],
+    images: ["https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&q=80&w=1000"]
+  },
+  {
+    name: "Sunrise Cricket Ground",
+    location: "Hyderabad, Telangana",
+    pricePerHour: 2500,
+    type: "Outdoor",
+    ratings: 4.8,
+    description: "Sunrise Cricket Ground is a premium outdoor cricket pitch in Hyderabad. Features floodlights, turf wickets, and professional training facilities.",
+    amenities: ["Floodlights", "Parking", "Turf Wicket", "Changing Room"],
+    images: ["https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400&q=80"]
+  },
+  {
+    name: "Greenfield Arena",
+    location: "Mumbai, Maharashtra",
+    pricePerHour: 3000,
+    type: "Indoor",
+    ratings: 4.5,
+    description: "An elite indoor cricket arena located in Mumbai. Features high quality astro turf, bowling machine, and air conditioned pavilion.",
+    amenities: ["Air Conditioning", "Changing Room", "Cafeteria", "Bowling Machine"],
+    images: ["https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&q=80&w=1000"]
+  },
+  {
+    name: "Pitch Paradise",
+    location: "Chennai, Tamil Nadu",
+    pricePerHour: 2200,
+    type: "Outdoor",
+    ratings: 4.7,
+    description: "Located in Chennai, Pitch Paradise is a beautiful outdoor ground surrounded by green trees. Includes excellent pavilion facilities and floodlights.",
+    amenities: ["Floodlights", "Pavilion", "Parking", "Drinking Water"],
+    images: ["https://images.unsplash.com/photo-1593341646782-e0b495cff86d?auto=format&fit=crop&q=80&w=1000"]
+  },
+  {
+    name: "All-round Arena",
+    location: "Bangalore, Karnataka",
+    pricePerHour: 2800,
+    type: "Net",
+    ratings: 4.4,
+    description: "An intensive practice net setup in Bangalore. Outfitted with multiple turf pitches, high speed bowling machines, and net helper staff.",
+    amenities: ["Practice Nets", "Bowling Machine", "Coaching Staff"],
     images: ["https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&q=80&w=1000"]
   }
 ];
