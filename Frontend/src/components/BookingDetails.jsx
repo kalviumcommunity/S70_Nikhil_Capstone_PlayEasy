@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "./Toast";
+import { fetchBookedSlots } from "../api";
 
 const BookingDetails = ({ ground }) => {
   const [searchParams] = useSearchParams();
   const defaultDate = searchParams.get("date") || "";
   const [selectedDate, setSelectedDate] = useState(defaultDate);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -14,7 +17,21 @@ const BookingDetails = ({ ground }) => {
   useEffect(() => {
     setSelectedDate(defaultDate);
     setSelectedTimeSlot("");
+    setBookedSlots([]);
   }, [ground?._id, defaultDate]);
+
+  // Fetch booked slots whenever ground name or date changes
+  useEffect(() => {
+    if (!ground?.name || !selectedDate) {
+      setBookedSlots([]);
+      return;
+    }
+    setLoadingSlots(true);
+    fetchBookedSlots(ground.name, selectedDate)
+      .then((res) => setBookedSlots(res.data.bookedSlots || []))
+      .catch(() => setBookedSlots([])) // fail silently — show all slots if API fails
+      .finally(() => setLoadingSlots(false));
+  }, [ground?.name, selectedDate]);
 
   const timeSlots = [
     "06:00 AM - 08:00 AM",
@@ -78,28 +95,55 @@ const BookingDetails = ({ ground }) => {
           min={today}
           className="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-gray-50"
           value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+            setSelectedTimeSlot(""); // reset slot when date changes
+          }}
         />
       </div>
 
       {/* Time Slot */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Time Slot</label>
-        <div className="grid grid-cols-2 gap-2">
-          {timeSlots.map((slot) => (
-            <button
-              key={slot}
-              onClick={() => setSelectedTimeSlot(slot)}
-              className={`text-xs py-2 px-2 rounded-xl border font-medium transition ${
-                selectedTimeSlot === slot
-                  ? "bg-green-600 text-white border-green-600 shadow-sm"
-                  : "bg-gray-50 text-gray-700 border-gray-200 hover:border-green-400 hover:text-green-600"
-              }`}
-            >
-              {slot}
-            </button>
-          ))}
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-medium text-gray-700">Select Time Slot</label>
+          {loadingSlots && (
+            <span className="text-xs text-gray-400 animate-pulse">Checking availability...</span>
+          )}
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          {timeSlots.map((slot) => {
+            const isBooked = bookedSlots.includes(slot);
+            const isSelected = selectedTimeSlot === slot;
+
+            return (
+              <button
+                key={slot}
+                onClick={() => !isBooked && setSelectedTimeSlot(slot)}
+                disabled={isBooked}
+                title={isBooked ? "Already booked" : slot}
+                className={`text-xs py-2 px-2 rounded-xl border font-medium transition relative ${
+                  isBooked
+                    ? "bg-red-50 text-red-300 border-red-100 cursor-not-allowed line-through"
+                    : isSelected
+                    ? "bg-green-600 text-white border-green-600 shadow-sm"
+                    : "bg-gray-50 text-gray-700 border-gray-200 hover:border-green-400 hover:text-green-600"
+                }`}
+              >
+                {slot}
+                {isBooked && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] px-1 rounded-full leading-4">
+                    Booked
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        {bookedSlots.length > 0 && (
+          <p className="text-xs text-gray-400 mt-2">
+            🔴 Strikethrough slots are already booked for this date.
+          </p>
+        )}
       </div>
 
       {/* Price Summary */}

@@ -3,6 +3,25 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const { protect } = require("../middleware/authMiddleware");
 
+// GET /api/bookings/slots?groundName=X&date=Y — Public: get booked slots for a ground on a date
+router.get("/slots", async (req, res) => {
+  try {
+    const { groundName, date } = req.query;
+    if (!groundName || !date) {
+      return res.status(400).json({ message: "groundName and date are required" });
+    }
+    const bookings = await Booking.find({
+      groundName,
+      date,
+      status: { $ne: "cancelled" }, // exclude cancelled bookings
+    }).select("timeSlot -_id");
+    const bookedSlots = bookings.map((b) => b.timeSlot);
+    res.json({ bookedSlots });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // POST /api/bookings  — create a booking (Protected)
 router.post("/", protect, async (req, res) => {
   try {
