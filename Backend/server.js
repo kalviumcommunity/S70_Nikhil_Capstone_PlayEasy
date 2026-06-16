@@ -9,6 +9,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 const groundRoutes = require("./routes/groundRoutes");
 const authRoutes = require("./routes/authRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 app.use("/api/grounds", groundRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {

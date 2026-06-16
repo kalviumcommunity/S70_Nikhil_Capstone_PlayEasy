@@ -46,4 +46,8 @@ export const cancelBooking = (id) => API.patch(`/bookings/${id}/cancel`);
 export const fetchBookedSlots = (groundName, date) =>
   API.get("/bookings/slots", { params: { groundName, date } });
 
+// Reviews
+export const fetchReviews = (groundId) => API.get(`/reviews/${groundId}`);
+export const createReview = (data) => API.post("/reviews", data);
+
 export default API;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Star, MapPin, Shield, Check, Info } from "lucide-react";
-import { fetchGroundById } from "../api";
+import { ArrowLeft, Star, MapPin, Shield, Check, Info, MessageSquare, Send } from "lucide-react";
+import { fetchGroundById, fetchReviews, createReview } from "../api";
 import { useToast } from "../components/Toast";
+import { useAuth } from "../context/AuthContext";
 import BookingDetails from "../components/BookingDetails";
 
 // Import local images as fallbacks
@@ -17,17 +18,29 @@ const GroundDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const { isAuthenticated } = useAuth();
 
   const [ground, setGround] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [userRating, setUserRating] = useState(5);
+  const [userComment, setUserComment] = useState("");
+  const [hoverRating, setHoverRating] = useState(0);
+
   useEffect(() => {
-    const getGround = async () => {
+    const getGroundAndReviews = async () => {
       setLoading(true);
       try {
-        const res = await fetchGroundById(id);
-        setGround(res.data);
+        const [groundRes, reviewsRes] = await Promise.all([
+          fetchGroundById(id),
+          fetchReviews(id),
+        ]);
+        setGround(groundRes.data);
+        setReviews(reviewsRes.data || []);
       } catch {
         toast.error("Failed to load ground details.");
         navigate("/booking");
@@ -35,8 +48,39 @@ const GroundDetailPage = () => {
         setLoading(false);
       }
     };
-    getGround();
+    getGroundAndReviews();
   }, [id, navigate, toast]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!userComment.trim()) {
+      toast.error("Please enter a comment.");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const res = await createReview({
+        groundId: id,
+        rating: userRating,
+        comment: userComment,
+      });
+
+      toast.success(res.data.message || "Review submitted!");
+      // Add the new review to the list
+      setReviews((prev) => [res.data.review, ...prev]);
+      // Update the average rating on the ground object dynamically
+      setGround((prev) => ({ ...prev, ratings: res.data.avgRating }));
+
+      // Clear the form
+      setUserComment("");
+      setUserRating(5);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to submit review. Try again.");
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -162,6 +206,131 @@ const GroundDetailPage = () => {
                   ))
                 ) : (
                   <p className="text-gray-400 text-sm col-span-full">Standard amenities provided.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Reviews & Ratings Section */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-sm space-y-6">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-green-600" />
+                  <span>Player Reviews &amp; Ratings ({reviews.length})</span>
+                </h3>
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  <span className="text-sm font-bold text-gray-800">{Number(rating).toFixed(1)}</span>
+                </div>
+              </div>
+
+              {/* Review Input Form */}
+              {isAuthenticated ? (
+                <form onSubmit={handleReviewSubmit} className="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-4">
+                  <h4 className="font-bold text-gray-900 text-sm">Write a Review</h4>
+                  
+                  {/* Star rating selector */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-gray-500 font-medium mr-2">Your Rating:</span>
+                    {[1, 2, 3, 4, 5].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setUserRating(val)}
+                        onMouseEnter={() => setHoverRating(val)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className="transition duration-150 transform hover:scale-110 focus:outline-none"
+                      >
+                        <Star
+                          className={`w-6 h-6 ${
+                            val <= (hoverRating || userRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Comment Input */}
+                  <div>
+                    <textarea
+                      rows="3"
+                      value={userComment}
+                      onChange={(e) => setUserComment(e.target.value)}
+                      placeholder="Share your experience playing at this ground..."
+                      className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={submittingReview}
+                      className="bg-green-600 text-white py-2 px-5 rounded-xl font-semibold text-xs flex items-center gap-1.5 hover:bg-green-700 transition disabled:opacity-50"
+                    >
+                      {submittingReview ? (
+                        <>Submitting...</>
+                      ) : (
+                        <>
+                          <Send className="w-3.5 h-3.5" />
+                          <span>Submit Review</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100 text-center py-6">
+                  <p className="text-gray-500 text-sm mb-3">You must be logged in to share a review.</p>
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="bg-green-600 text-white px-5 py-2 rounded-xl text-xs font-semibold hover:bg-green-700 transition shadow-sm"
+                  >
+                    Login / Sign Up
+                  </button>
+                </div>
+              )}
+
+              {/* Reviews List */}
+              <div className="space-y-4">
+                {reviews.length > 0 ? (
+                  reviews.map((rev) => (
+                    <div key={rev._id} className="border-b border-gray-50 pb-4 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start flex-wrap gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-gray-900 text-sm">{rev.userName}</p>
+                          {rev.isVerified && (
+                            <span className="bg-green-50 text-green-700 border border-green-200/50 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+                              <Check className="w-2.5 h-2.5" /> Verified Booker
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          {new Date(rev.createdAt).toLocaleDateString("en-IN", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+
+                      {/* Stars */}
+                      <div className="flex items-center gap-0.5 mb-2">
+                        {[1, 2, 3, 4, 5].map((val) => (
+                          <Star
+                            key={val}
+                            className={`w-3.5 h-3.5 ${
+                              val <= rev.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-200"
+                            }`}
+                          />
+                        ))}
+                      </div>
+
+                      <p className="text-gray-600 text-sm leading-relaxed">{rev.comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-gray-400 text-sm">
+                    💬 No reviews yet. Be the first to share your experience!
+                  </div>
                 )}
               </div>
             </div>
