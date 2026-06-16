@@ -1,8 +1,15 @@
 import React from "react";
 
-const FiltersSidebar = ({ filters, onChange, onApply }) => {
+const FiltersSidebar = ({ filters, onChange, onApply, onClear }) => {
   const handleChange = (field, value) => {
     onChange({ ...filters, [field]: value });
+  };
+
+  const handleClear = () => {
+    const cleared = { location: "", minPrice: "", maxPrice: "", type: "", minRating: "" };
+    onChange(cleared);
+    // Use onClear if provided (passes cleared state to parent to apply immediately)
+    if (onClear) onClear(cleared);
   };
 
   return (
@@ -95,7 +102,7 @@ const FiltersSidebar = ({ filters, onChange, onApply }) => {
           Apply Filters
         </button>
         <button
-          onClick={() => onChange({ location: "", minPrice: "", maxPrice: "", type: "", minRating: "" })}
+          onClick={handleClear}
           className="w-full text-gray-500 py-2.5 rounded-xl text-sm font-medium hover:text-gray-900 hover:bg-gray-50 transition border border-transparent hover:border-gray-200"
         >
           Clear All

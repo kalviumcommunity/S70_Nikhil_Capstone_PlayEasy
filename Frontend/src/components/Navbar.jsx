@@ -21,6 +21,7 @@ const Navbar = () => {
 
   if (isAuthenticated) {
     navLinks.push({ to: "/my-bookings", label: "My Bookings" });
+    navLinks.push({ to: "/manage-grounds", label: "Manage Grounds" });
   }
 
   const isActive = (path) =>

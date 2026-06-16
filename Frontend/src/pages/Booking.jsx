@@ -63,7 +63,6 @@ const Booking = () => {
   const [selectedGround, setSelectedGround] = useState(null);
   const [grounds, setGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // Initialize filters from URL query params (from Hero search)
   const [filters, setFilters] = useState({
@@ -74,12 +73,17 @@ const Booking = () => {
     minRating: "",
   });
 
-  const [appliedFilters, setAppliedFilters] = useState(filters);
+  const [appliedFilters, setAppliedFilters] = useState({
+    location: searchParams.get("city") || "",
+    minPrice: "",
+    maxPrice: searchParams.get("maxPrice") || "",
+    type: "",
+    minRating: "",
+  });
 
   useEffect(() => {
     const loadGrounds = async () => {
       setLoading(true);
-      setError(null);
       try {
         const res = await fetchGrounds({
           location: appliedFilters.location,
@@ -88,9 +92,9 @@ const Booking = () => {
           type: appliedFilters.type,
         });
         const apiGrounds = res.data || [];
-        // Use API data if available, otherwise fall back to static
+        // Use API data if available, then apply client-side minRating filter
         if (apiGrounds.length > 0) {
-          setGrounds(apiGrounds);
+          setGrounds(applyClientFilters(apiGrounds, appliedFilters));
         } else {
           setGrounds(applyClientFilters(STATIC_GROUNDS, appliedFilters));
         }
@@ -118,7 +122,15 @@ const Booking = () => {
   };
 
   const handleApplyFilters = () => {
-    setAppliedFilters(filters);
+    setAppliedFilters({ ...filters });
+    setSelectedGround(null);
+  };
+
+  // Called by FiltersSidebar's "Clear All" with the cleared state directly
+  // This avoids the async setState timing issue
+  const handleClearFilters = (cleared) => {
+    setFilters(cleared);
+    setAppliedFilters(cleared);
     setSelectedGround(null);
   };
 
@@ -140,6 +152,7 @@ const Booking = () => {
             filters={filters}
             onChange={setFilters}
             onApply={handleApplyFilters}
+            onClear={handleClearFilters}
           />
         </div>
 

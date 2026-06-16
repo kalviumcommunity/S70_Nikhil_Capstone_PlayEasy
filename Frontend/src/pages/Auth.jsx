@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/Toast";
 import { loginUser, registerUser } from "../api";
@@ -10,8 +10,12 @@ const Auth = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const toast = useToast();
+
+  // Redirect back to the page the user came from, or default to home
+  const from = location.state?.from?.pathname || "/";
 
   const handleChange = (e) =>
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -27,7 +31,7 @@ const Auth = () => {
       const { data } = await loginUser({ email: formData.email, password: formData.password });
       login(data.user, data.token);
       toast.success(`Welcome back, ${data.user.name.split(" ")[0]}! 🏏`);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
@@ -58,7 +62,7 @@ const Auth = () => {
       });
       login(data.user, data.token);
       toast.success(`Account created! Welcome, ${data.user.name.split(" ")[0]}! 🎉`);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -203,6 +207,7 @@ const Auth = () => {
               <button
                 key={alt}
                 type="button"
+                onClick={() => toast.info(`${alt} login coming soon!`)}
                 className="flex-1 flex items-center justify-center gap-2 border border-gray-200 py-2.5 rounded-xl hover:bg-gray-50 transition text-sm text-gray-600"
               >
                 <img src={src} alt={alt} className="w-4 h-4" />

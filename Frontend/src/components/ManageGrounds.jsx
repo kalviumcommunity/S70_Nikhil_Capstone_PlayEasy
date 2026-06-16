@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import GroundCard from "./GroundCard";
 import { fetchGrounds, createGround, updateGround, deleteGround } from "../api";
 import { useToast } from "./Toast";
@@ -13,6 +14,7 @@ const EMPTY_FORM = {
 };
 
 const ManageGrounds = () => {
+  const navigate = useNavigate();
   const [grounds, setGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -21,11 +23,7 @@ const ManageGrounds = () => {
   const [saving, setSaving] = useState(false);
   const toast = useToast();
 
-  useEffect(() => {
-    loadGrounds();
-  }, []);
-
-  const loadGrounds = async () => {
+  const loadGrounds = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetchGrounds();
@@ -35,7 +33,11 @@ const ManageGrounds = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadGrounds();
+  }, [loadGrounds]);
 
   const openAddModal = () => {
     setEditingGround(null);
@@ -155,7 +157,7 @@ const ManageGrounds = () => {
               <GroundCard
                 key={ground._id}
                 ground={ground}
-                onBook={() => {}}
+                onBook={() => navigate("/booking")}
                 onEdit={() => openEditModal(ground)}
                 onDelete={() => handleDelete(ground)}
                 showActions={true}

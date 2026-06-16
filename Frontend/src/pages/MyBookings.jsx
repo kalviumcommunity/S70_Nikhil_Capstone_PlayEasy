@@ -18,7 +18,7 @@ const STATUS_LABELS = {
 };
 
 const MyBookings = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
@@ -34,7 +34,7 @@ const MyBookings = () => {
       .then((res) => setBookings(res.data))
       .catch(() => toast.error("Failed to load bookings."))
       .finally(() => setLoading(false));
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, toast]);
 
   const handleCancel = async (bookingId) => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;

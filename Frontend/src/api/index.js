@@ -11,6 +11,23 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-logout on 401 (expired/invalid token) so user doesn't stay stuck
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Clear stale auth data
+      localStorage.removeItem("playeasy_token");
+      localStorage.removeItem("playeasy_user");
+      // Redirect to auth page only if not already there
+      if (!window.location.pathname.includes("/auth")) {
+        window.location.href = "/auth";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth
 export const registerUser = (data) => API.post("/auth/register", data);
 export const loginUser = (data) => API.post("/auth/login", data);

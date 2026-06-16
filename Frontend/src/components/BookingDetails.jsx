@@ -1,12 +1,20 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "./Toast";
 
 const BookingDetails = ({ ground }) => {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [searchParams] = useSearchParams();
+  const defaultDate = searchParams.get("date") || "";
+  const [selectedDate, setSelectedDate] = useState(defaultDate);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
   const navigate = useNavigate();
   const toast = useToast();
+
+  // Reset selections whenever the user picks a different ground
+  useEffect(() => {
+    setSelectedDate(defaultDate);
+    setSelectedTimeSlot("");
+  }, [ground?._id, defaultDate]);
 
   const timeSlots = [
     "06:00 AM - 08:00 AM",

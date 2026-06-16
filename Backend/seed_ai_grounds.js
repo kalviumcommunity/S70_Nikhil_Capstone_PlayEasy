@@ -4,44 +4,54 @@ const Ground = require("./models/Ground");
 
 const seedGrounds = [
   {
-    name: "Future Arena International",
+    name: "Mumbai International Stadium",
     location: "Mumbai, Maharashtra",
     pricePerHour: 15000,
     type: "Outdoor",
     ratings: 4.9,
-    description: "A futuristic 3D rendered cricket stadium with neon accents and 8K lighting. The most advanced facility in the country.",
-    amenities: ["Neon Floodlights", "Smart Pitch", "VR Replay", "VIP Lounge"],
-    image: "/images/stadium_ai_1778754390352.png"
+    description: "A world-class professional stadium experience in the heart of Mumbai with high-intensity floodlights and a pristine turf pitch. Feel like a pro under the lights.",
+    amenities: ["Professional Floodlights", "International Standard Pitch", "VIP Pavilion", "Dressing Rooms"],
+    images: ["https://images.unsplash.com/photo-1562077772-3bd90403f7f0?w=800&q=80"]
   },
   {
-    name: "Cotswolds Heritage Ground",
+    name: "Willow Creek Village Ground",
     location: "Bangalore, Karnataka",
     pricePerHour: 2500,
     type: "Outdoor",
     ratings: 4.6,
-    description: "An impressionist-style English village ground. Experience cricket like a classic oil painting with lush greens and historic vibes.",
-    amenities: ["Classic Pavilion", "Tea Service", "Natural Grass", "Picnic Area"],
-    image: "/images/outdoor_ai_1778754409577.png"
+    description: "A serene, traditional village-style cricket ground in Bangalore surrounded by lush greenery. Perfect for a relaxed weekend match with friends.",
+    amenities: ["Matting Pitch", "Natural Shade", "Seating Gallery", "Cafeteria"],
+    images: ["https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=1000"]
   },
   {
-    name: "Velocity Training Nets",
+    name: "Pro-Strike Indoor Arena",
     location: "Delhi, NCR",
     pricePerHour: 1200,
     type: "Indoor",
     ratings: 4.8,
-    description: "High-speed action photography themed indoor nets. Designed for professional training with high-speed motion analysis.",
-    amenities: ["Motion Capture", "Bowling Machine", "Rubber Turf", "Data Analytics"],
-    image: "/images/indoor_ai_1778754456377.png"
+    description: "State-of-the-art indoor facility in Delhi with high-quality artificial turf and advanced bowling machines for serious practice.",
+    amenities: ["Bowling Machine", "Astra-Turf", "Air Conditioning", "Locker Rooms"],
+    images: ["https://images.unsplash.com/photo-1624526267942-ab0ff8a3e972?auto=format&fit=crop&q=80&w=1000"]
   },
   {
-    name: "Oasis Desert Oval",
+    name: "Sunset Valley Oval",
     location: "Hyderabad, Telangana",
     pricePerHour: 3000,
     type: "Outdoor",
     ratings: 4.7,
-    description: "A unique drone-shot oasis ground. A stunning contrast of golden desert sands and vibrant green grass.",
-    amenities: ["Desert View", "Eco Friendly", "Sand Dunes Backdrop", "Open Air"],
-    image: "/images/sunset_ai_1778754685804.png"
+    description: "A picturesque Hyderabad ground known for its stunning sunset views. Features a well-maintained outfield and excellent bounce.",
+    amenities: ["Floodlights", "Matting Pitch", "Parking", "First Aid"],
+    images: ["https://images.unsplash.com/photo-1593341646782-e0b495cff86d?auto=format&fit=crop&q=80&w=1000"]
+  },
+  {
+    name: "Chennai Super Nets",
+    location: "Chennai, Tamil Nadu",
+    pricePerHour: 800,
+    type: "Net",
+    ratings: 4.5,
+    description: "Premium practice nets in Chennai with both cement and turf pitches. Ideal for intense batting and bowling drills.",
+    amenities: ["Turf & Cement Pitches", "Net Bowlers", "Coaching Staff"],
+    images: ["https://images.unsplash.com/photo-1589487391730-58f20eb2c308?auto=format&fit=crop&q=80&w=1000"]
   }
 ];
 
@@ -49,9 +59,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log("Connected to MongoDB for Seeding...");
     
-    // Optional: Only clear grounds that have local images so we don't duplicate
-    await Ground.deleteMany({ image: { $regex: "^/images/" } });
-    console.log("Cleared old AI generated grounds");
+    // Clear ALL existing grounds to ensure a clean, professional state
+    await Ground.deleteMany({});
+    console.log("Cleared all existing grounds for fresh seed");
 
     const inserted = await Ground.insertMany(seedGrounds);
     console.log(`Successfully added ${inserted.length} premium AI grounds!`);
