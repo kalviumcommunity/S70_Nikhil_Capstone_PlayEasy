@@ -3,13 +3,34 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const { protect } = require("../middleware/authMiddleware");
 
-// GET /api/bookings/for-ground?groundName=X&date=Y — Owner: see all bookings for a ground
+const Ground = require("../models/Ground");
+
+// GET /api/bookings/for-ground?groundName=X&date=Y — Owner ONLY: see bookings for their ground
 router.get("/for-ground", protect, async (req, res) => {
   try {
     const { groundName, date } = req.query;
     if (!groundName) {
       return res.status(400).json({ message: "groundName is required" });
     }
+
+    // ── OWNERSHIP CHECK ──────────────────────────────────────────────
+    // Find the ground and verify the requesting user is the owner
+    const ground = await Ground.findOne({
+      name: { $regex: new RegExp(`^${groundName}$`, "i") },
+    });
+
+    if (!ground) {
+      return res.status(404).json({ message: "Ground not found" });
+    }
+
+    // If the ground has an owner set, verify it matches the logged-in user
+    if (ground.ownerEmail && ground.ownerEmail !== req.user.email) {
+      return res.status(403).json({
+        message: "Access denied. You are not the owner of this ground.",
+      });
+    }
+    // ────────────────────────────────────────────────────────────────
+
     const query = { groundName: { $regex: new RegExp(`^${groundName}$`, "i") } };
     if (date) query.date = date;
     const bookings = await Booking.find(query).sort({ date: 1, timeSlot: 1 });

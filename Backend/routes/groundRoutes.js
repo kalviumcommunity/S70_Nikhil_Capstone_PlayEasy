@@ -67,14 +67,20 @@ router.get("/:id", async (req, res) => {
 // ✅ PUT endpoint to update ground details
 router.put("/:id", protect, async (req, res) => {
   try {
+    const ground = await Ground.findById(req.params.id);
+    if (!ground) {
+      return res.status(404).json({ message: "Ground not found" });
+    }
+
+    // Ownership check
+    if (ground.ownerEmail && ground.ownerEmail !== req.user.email) {
+      return res.status(403).json({ message: "Access denied. You do not own this ground." });
+    }
+
     const updatedGround = await Ground.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-
-    if (!updatedGround) {
-      return res.status(404).json({ message: "Ground not found" });
-    }
 
     res.status(200).json({ message: "Ground updated successfully!", data: updatedGround });
   } catch (error) {
@@ -85,11 +91,17 @@ router.put("/:id", protect, async (req, res) => {
 // ✅ DELETE endpoint to remove a ground
 router.delete("/:id", protect, async (req, res) => {
   try {
-    const deletedGround = await Ground.findByIdAndDelete(req.params.id);
-
-    if (!deletedGround) {
+    const ground = await Ground.findById(req.params.id);
+    if (!ground) {
       return res.status(404).json({ message: "Ground not found" });
     }
+
+    // Ownership check
+    if (ground.ownerEmail && ground.ownerEmail !== req.user.email) {
+      return res.status(403).json({ message: "Access denied. You do not own this ground." });
+    }
+
+    await Ground.findByIdAndDelete(req.params.id);
 
     res.status(200).json({ message: "Ground deleted successfully!" });
   } catch (error) {

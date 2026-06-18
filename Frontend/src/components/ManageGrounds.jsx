@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import GroundCard from "./GroundCard";
-import { fetchGrounds, createGround, updateGround, deleteGround } from "../api";
+import { fetchMyGrounds, createGround, updateGround, deleteGround } from "../api";
 import { useToast } from "./Toast";
 import { X } from "lucide-react";
 
@@ -26,7 +26,7 @@ const ManageGrounds = () => {
   const loadGrounds = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetchGrounds();
+      const res = await fetchMyGrounds();
       setGrounds(res.data || []);
     } catch {
       toast.error("Failed to load grounds.");

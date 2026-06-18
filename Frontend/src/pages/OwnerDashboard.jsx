@@ -6,7 +6,7 @@ import {
   RefreshCw, Eye, Building2, CalendarDays, ArrowUpRight,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { fetchGrounds, fetchGroundBookings } from "../api";
+import { fetchMyGrounds, fetchGroundBookings } from "../api";
 import { useToast } from "../components/Toast";
 
 /* ── helpers ──────────────────────────────────────────────────── */
@@ -73,16 +73,16 @@ const OwnerDashboard = () => {
   const [filterDate, setFilterDate] = useState("");
   const [activeTab, setActiveTab] = useState("today");   // today | upcoming | all
 
-  /* load all grounds */
+  /* load only THIS owner's grounds */
   const loadGrounds = useCallback(async () => {
     setLoadingGrounds(true);
     try {
-      const res = await fetchGrounds();
-      const all = res.data || [];
-      setGrounds(all);
-      if (all.length > 0 && !selectedGround) setSelectedGround(all[0]);
+      const res = await fetchMyGrounds();   // ← only grounds where ownerEmail = user.email
+      const owned = res.data || [];
+      setGrounds(owned);
+      if (owned.length > 0 && !selectedGround) setSelectedGround(owned[0]);
     } catch {
-      toast.error("Failed to load grounds.");
+      toast.error("Failed to load your grounds.");
     } finally {
       setLoadingGrounds(false);
     }
@@ -192,15 +192,20 @@ const OwnerDashboard = () => {
             <div className="w-10 h-10 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
           </div>
         ) : grounds.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 text-center">
-            <p className="text-6xl mb-4">🏟️</p>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">No grounds listed yet</h3>
-            <p className="text-gray-400 text-sm mb-6">Add your first ground to start receiving bookings.</p>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 text-center max-w-lg mx-auto">
+            <p className="text-6xl mb-4">🔒</p>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">No grounds linked to your account</h3>
+            <p className="text-gray-400 text-sm mb-2 leading-relaxed">
+              Only grounds you personally added appear here — keeping your booking data 100% private from other users.
+            </p>
+            <p className="text-gray-300 text-xs mb-6">
+              Logged in as <span className="font-mono text-gray-400">{user?.email}</span>
+            </p>
             <button
               onClick={() => navigate("/manage-grounds")}
-              className="bg-green-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-green-700 transition"
+              className="bg-green-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-green-700 transition shadow-sm"
             >
-              + Add a Ground
+              + Add Your Ground
             </button>
           </div>
         ) : (
