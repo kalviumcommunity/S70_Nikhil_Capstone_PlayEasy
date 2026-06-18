@@ -61,14 +61,18 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 hover:border-green-300 hover:bg-green-50 transition"
+                  title="View Profile"
+                >
                   <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-gray-700">
                     {user.name.split(" ")[0]}
                   </span>
-                </div>
+                </button>
                 <button
                   onClick={handleLogout}
                   className="text-sm font-medium text-red-500 hover:text-red-600 transition flex items-center gap-1.5"
@@ -130,6 +134,12 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <p className="text-sm text-gray-500 px-4">Signed in as <strong>{user.name}</strong></p>
+                <button
+                  onClick={() => { navigate("/profile"); setMenuOpen(false); }}
+                  className="w-full text-sm border border-green-300 text-green-700 py-2 rounded-full hover:bg-green-50 transition mt-1"
+                >
+                  My Profile
+                </button>
                 <button
                   onClick={handleLogout}
                   className="w-full text-sm border border-red-300 text-red-500 py-2 rounded-full hover:bg-red-50 transition mt-1"
