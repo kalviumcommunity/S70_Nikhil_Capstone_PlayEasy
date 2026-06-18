@@ -166,7 +166,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30 pb-16">
       {/* ── Hero Header ──────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-green-700 via-green-600 to-emerald-500 pt-10 pb-28">
+      <div className="relative overflow-hidden bg-gradient-to-r from-green-700 via-green-600 to-emerald-500 pt-10 pb-10">
         {/* decorative circles */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
@@ -207,8 +207,8 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* ── Cards Grid (overlapping hero) ────────────────── */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-14">
+      {/* ── Cards Grid ────────────────── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 mt-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
           <StatCard
             icon={Calendar}
