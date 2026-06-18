@@ -3,6 +3,22 @@ const router = express.Router();
 const Booking = require("../models/Booking");
 const { protect } = require("../middleware/authMiddleware");
 
+// GET /api/bookings/for-ground?groundName=X&date=Y — Owner: see all bookings for a ground
+router.get("/for-ground", protect, async (req, res) => {
+  try {
+    const { groundName, date } = req.query;
+    if (!groundName) {
+      return res.status(400).json({ message: "groundName is required" });
+    }
+    const query = { groundName: { $regex: new RegExp(`^${groundName}$`, "i") } };
+    if (date) query.date = date;
+    const bookings = await Booking.find(query).sort({ date: 1, timeSlot: 1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 // GET /api/bookings/slots?groundName=X&date=Y — Public: get booked slots for a ground on a date
 router.get("/slots", async (req, res) => {
   try {

@@ -45,6 +45,11 @@ export const fetchBookings = () => API.get("/bookings");
 export const cancelBooking = (id) => API.patch(`/bookings/${id}/cancel`);
 export const fetchBookedSlots = (groundName, date) =>
   API.get("/bookings/slots", { params: { groundName, date } });
+// Owner: bookings made on a specific ground (any player)
+export const fetchGroundBookings = (groundName, date) =>
+  API.get("/bookings/for-ground", { params: { groundName, ...(date && { date }) } });
+// Owner: only grounds owned by the logged-in user
+export const fetchMyGrounds = () => API.get("/grounds/my-grounds");
 
 // Reviews
 export const fetchReviews = (groundId) => API.get(`/reviews/${groundId}`);

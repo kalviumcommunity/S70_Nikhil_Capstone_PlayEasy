@@ -15,6 +15,7 @@ import PaymentPage from "./pages/PaymentPage";
 import ManageGrounds from "./components/ManageGrounds";
 import MyBookings from "./pages/MyBookings";
 import ProfilePage from "./pages/ProfilePage";
+import OwnerDashboard from "./pages/OwnerDashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -36,6 +37,7 @@ const App = () => {
               <Route path="/my-bookings" element={<ProtectedRoute><MyBookings /></ProtectedRoute>} />
               <Route path="/manage-grounds" element={<ProtectedRoute><ManageGrounds /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/owner-dashboard" element={<ProtectedRoute><OwnerDashboard /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

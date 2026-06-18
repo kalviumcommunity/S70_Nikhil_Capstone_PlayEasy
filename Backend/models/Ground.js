@@ -38,6 +38,12 @@ const GroundSchema = new mongoose.Schema({
     images: {
         type: [String],
         default: []
+    },
+    ownerEmail: {
+        type: String,
+        default: null,
+        lowercase: true,
+        trim: true
     }
 }, { timestamps: true });
 

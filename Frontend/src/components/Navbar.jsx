@@ -22,6 +22,7 @@ const Navbar = () => {
   if (isAuthenticated) {
     navLinks.push({ to: "/my-bookings", label: "My Bookings" });
     navLinks.push({ to: "/manage-grounds", label: "Manage Grounds" });
+    navLinks.push({ to: "/owner-dashboard", label: "🏟️ Owner Dashboard" });
   }
 
   const isActive = (path) =>
@@ -139,6 +140,12 @@ const Navbar = () => {
                   className="w-full text-sm border border-green-300 text-green-700 py-2 rounded-full hover:bg-green-50 transition mt-1"
                 >
                   My Profile
+                </button>
+                <button
+                  onClick={() => { navigate("/owner-dashboard"); setMenuOpen(false); }}
+                  className="w-full text-sm border border-blue-300 text-blue-600 py-2 rounded-full hover:bg-blue-50 transition mt-1"
+                >
+                  🏟️ Owner Dashboard
                 </button>
                 <button
                   onClick={handleLogout}

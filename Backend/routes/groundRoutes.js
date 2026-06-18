@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
-
-// Import model
 const Ground = require("../models/Ground");
 
 
-// ✅ POST - Create a new ground
+// ✅ POST - Create a new ground (saves ownerEmail from logged-in user)
 router.post("/", protect, async (req, res) => {
   try {
-    const newGround = new Ground(req.body);
+    const newGround = new Ground({
+      ...req.body,
+      ownerEmail: req.user.email,  // tag ground with creator's email
+    });
     const savedGround = await newGround.save();
     res.status(201).json({ message: "Ground added successfully!", data: savedGround });
   } catch (error) {
@@ -18,12 +19,23 @@ router.post("/", protect, async (req, res) => {
 });
 
 
-// ✅ GET endpoint with filters
+// ✅ GET /my-grounds — Return only grounds owned by logged-in user (Protected)
+router.get("/my-grounds", protect, async (req, res) => {
+  try {
+    const grounds = await Ground.find({ ownerEmail: req.user.email }).sort({ createdAt: -1 });
+    res.json(grounds);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+
+// ✅ GET endpoint with filters (public)
 router.get("/", async (req, res) => {
   const { location, minPrice, maxPrice, type } = req.query;
 
   const query = {};
-  if (location) query.location = { $regex: location, $options: "i" }; // case-insensitive partial match
+  if (location) query.location = { $regex: location, $options: "i" };
   if (type) query.type = type;
   if (minPrice || maxPrice) {
     query.pricePerHour = {};
