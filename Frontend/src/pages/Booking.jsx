@@ -116,8 +116,9 @@ const Booking = () => {
     });
   };
 
-  const handleApplyFilters = () => {
-    setAppliedFilters({ ...filters });
+  // Called with optional updated filters (auto-apply from sidebar) or no arg (manual button)
+  const handleApplyFilters = (updatedFilters) => {
+    setAppliedFilters(updatedFilters ? { ...updatedFilters } : { ...filters });
   };
 
   // Called by FiltersSidebar's "Clear All" with the cleared state directly
